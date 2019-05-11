@@ -1,5 +1,15 @@
+import hmac, hashlib
 from alerta.models.alert import Alert
 from alerta.webhooks import WebhookBase
+
+
+def verify_message(msg, signature, key):
+    """
+    Verify the HMAC send from Cisco Stealthwatch
+    """
+    digest = hmac.new(key, msg=msg, digestmod=hashlib.sha256).hexdigest()
+    return hmac.compare_digest(digest, signature)
+
 
 class StealthwatchWebhook(WebhookBase):
     """
@@ -7,7 +17,6 @@ class StealthwatchWebhook(WebhookBase):
     Good luck finiding any usefull documentation, it's cisco as usual
     """
     def incoming(self, query_string, payload):
-
         event = payload.get('type', 'No type found')
         resource = payload.get('hostname', 'No resource found')
         text = payload.get('text', 'No text found')
@@ -20,7 +29,7 @@ class StealthwatchWebhook(WebhookBase):
             status = 'closed'
             severity = 'normal'
         else:
-            status = 'opened'
+            status = 'open'
             severity = 'warning'
 
         return Alert(
