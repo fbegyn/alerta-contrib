@@ -18,7 +18,7 @@ class StealthwatchWebhook(WebhookBase):
     """
     def incoming(self, query_string, payload):
         event = payload.get('type', 'No type found')
-        resource = payload.get('hostname', 'No resource found')
+        resource = payload['source_info']['name'] or payload.get('source', 'No resource found')
         text = payload.get('text', 'No text found')
         service = payload.get('source_name', 'No services found')
         resolved = payload.get('resolved', False)
