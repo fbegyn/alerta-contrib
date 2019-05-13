@@ -20,7 +20,7 @@ class StealthwatchWebhook(WebhookBase):
         event = payload.get('type', 'No type found')
         text = payload.get('text', 'No text found')
         resolved = payload.get('resolved', False)
-        tags = payload.get('tags', 'No tags found')
+        tags = payload.get('tags', ['No tags found'])
 
         hostname = payload.get('hostname', 'No hostname found')
         if hostname == '':
