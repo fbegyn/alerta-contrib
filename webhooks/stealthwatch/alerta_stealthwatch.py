@@ -18,10 +18,16 @@ class StealthwatchWebhook(WebhookBase):
     """
     def incoming(self, query_string, payload):
         event = payload.get('type', 'No type found')
-        resource = payload['source_info']['name'] or payload.get('source', 'No resource found')
         text = payload.get('text', 'No text found')
-        service = payload.get('source_name', 'No services found')
         resolved = payload.get('resolved', False)
+        tags = payload.get('tags', 'No tags found')
+
+        hostname = payload.get('hostname', 'No hostname found')
+        if hostname == '':
+            resource = payload['source_info']['name'] or \
+                        payload.get('source', 'No resource found')
+        else:
+            resource = hostname
 
         status = 'undefined'
         severity = 'undefined'
@@ -32,6 +38,8 @@ class StealthwatchWebhook(WebhookBase):
             status = 'open'
             severity = 'warning'
 
+        service = 'Stealthwatch'
+
         return Alert(
             service=[service],
             resource=resource,
@@ -40,6 +48,7 @@ class StealthwatchWebhook(WebhookBase):
             severity=severity,
             environment='Production',
             text=text,
+            tags=tags,
             origin='Cisco Stealthwatch',
             raw_data=payload
         )
